@@ -1,0 +1,16 @@
+#ifndef GETVERSIONFIELD_H
+#define GETVERSIONFIELD_H
+
+#include <cstdint>
+
+enum EXR_VERSION_FIELD_MASK{
+	VERSION_MASK = 0xff,
+	IS_SINGLE_PART_TILED = 0x200,
+	LONG_NAME_BIT = 0x400,
+	CONTAIN_DEEP_DATAS_BIT = 0x800,
+	IS_MULTIPART_BIT = 0x1000
+};
+
+uint32_t getVersionField(const char* fileName);
+
+#endif // GETVERSIONFIELD_H
