@@ -24,3 +24,4 @@ add_subdirectory(utils)
 
 #programs
 add_subdirectory(listPartsAndLayers)
+add_subdirectory(convertDtmFromRasterToExr)
