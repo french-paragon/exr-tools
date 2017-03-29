@@ -1,4 +1,4 @@
-set(PROG_NAME ${EXRTOOLS_PROG_PREFIX}-dtm_convert)
+set(PROG_NAME ${EXRTOOLS_PROG_PREFIX}-dtm_invertconvert)
 
 add_executable(${PROG_NAME} main.cpp)
 
