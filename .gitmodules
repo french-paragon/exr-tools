@@ -1,3 +1,6 @@
 [submodule "submodules/CImg"]
 	path = submodules/CImg
 	url = https://github.com/dtschump/CImg.git
+[submodule "submodules/pybind11"]
+	path = submodules/pybind11
+	url = https://github.com/pybind/pybind11.git
