@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
 	for (int i = 1; i <= n_band; i++) {
 
 		std::stringstream ss;
-		ss << "B." << i;
+		ss << "B." << i << ".values";
 		std::string name = ss.str();
 
 		GDALRasterBand* band = bilDataset->GetRasterBand(i);
@@ -83,10 +83,11 @@ int main(int argc, char** argv) {
 		switch (type) {
 		case GDT_UInt32:
 		case GDT_UInt16:
-			ExrDataType = UINT; //uint16 and uint32 will be stored as uint32.
-			break;
+			/*ExrDataType = UINT; //uint16 and uint32 will be stored as uint32.
+			break;*/
 		case GDT_Float32:
 			ExrDataType = FLOAT; //float32 will be stored as float32.
+			break;
 		default:
 			ExrDataType = NUM_PIXELTYPES; //other type will be ignored.
 			break;
@@ -152,6 +153,11 @@ int main(int argc, char** argv) {
 
 	}
 
+	if (selectedChannels.empty()) {
+		std::cerr << "No channel selected !" << std::endl;
+		return 1;
+	}
+
 	OutputFile oFile(argv[2], header);
 	FrameBuffer frameBuffer;
 
@@ -161,7 +167,7 @@ int main(int argc, char** argv) {
 		int ExrDataType = selectedChannelsType[i];
 
 		std::stringstream ss;
-		ss << "B." << n_band;
+		ss << "B." << n_band << ".values";
 		std::string name = ss.str();
 
 		char * data;
