@@ -60,16 +60,15 @@ py::array_t<float> readExrChannel(std::string file, std::string channel) {
 	Imf::Array2D<float> pixels;
 	pixels.resizeErase(height, width);
 
-	py::array_t<float> r;
-	r.resize({height, width});
+    py::array_t<float> r(std::vector<size_t>({static_cast<size_t>(height), static_cast<size_t>(width)}));
 
 	Imf::FrameBuffer frameBuffer;
 
 	frameBuffer.insert (channel.c_str(),                                  // name
 						Imf::Slice (Imf::FLOAT,                         // type
-									(char *) (r.mutable_data()),
+                                    static_cast<char*>(static_cast<void*>(r.mutable_data())),
 									sizeof (float) * 1,    // xStride
-									sizeof (float) * width,// yStride
+                                    sizeof (float) * static_cast<unsigned long>(width),// yStride
 									1, 1,                          // x/y sampling
 									FLT_MAX));                     // fillValue
 

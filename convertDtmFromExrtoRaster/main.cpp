@@ -17,6 +17,7 @@
  */
 
 #include <iostream>
+#include <vector>
 
 #undef cimg_display
 #define cimg_display 0
@@ -75,11 +76,11 @@ bool readZ (const char fileName[], Array2D<float>* zPixels, int &width, int &hei
 
 	frameBuffer.insert (cName,                                  // name
 						Slice (FLOAT,                         // type
-							   (char *) (&(*zPixels)[0][0] -     // base
+                               static_cast<char *>(static_cast<void *>(&(*zPixels)[0][0] -     // base
 										 dw.min.x -
-										 dw.min.y * width),
+                                         dw.min.y * width)),
 							   sizeof ((*zPixels)[0][0]) * 1,    // xStride
-							   sizeof ((*zPixels)[0][0]) * width,// yStride
+                               sizeof ((*zPixels)[0][0]) * static_cast<unsigned long>(width),// yStride
 							   1, 1,                          // x/y sampling
 							   FLT_MAX));                     // fillValue
 
@@ -110,7 +111,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	cil::CImg<float> fImg(width, height);
+    cil::CImg<float> fImg(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 	fImg._data = datas[0];
 
 	fImg.normalize(0, 255);
