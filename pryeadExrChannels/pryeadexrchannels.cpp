@@ -20,6 +20,7 @@
 #include "pybind11/numpy.h"
 
 #include <string>
+#include <iterator>
 
 #include <OpenEXR/ImfArray.h>
 #include <OpenEXR/ImfInputFile.h>
@@ -79,10 +80,65 @@ py::array_t<float> readExrChannel(std::string file, std::string channel) {
 }
 
 
+py::array_t<float> readExrLayer(std::string file, std::string layer) {
+
+    const char * fileName = file.c_str();
+
+    if (!isExrFile(fileName)) {
+        return py::array_t<double>();
+    }
+
+    Imf::InputFile exr_file (fileName);
+
+    const Imf::ChannelList &channels = exr_file.header().channels();
+
+    Imf::ChannelList::ConstIterator layerBegin, layerEnd;
+    channels.channelsInLayer (layer, layerBegin, layerEnd);
+
+    Imath::Box2i dw = exr_file.header().dataWindow();
+    int width  = dw.max.x - dw.min.x + 1;
+    int height = dw.max.y - dw.min.y + 1;
+
+    int nChannel = 0;
+    for (Imf::ChannelList::ConstIterator j = layerBegin; j != layerEnd; ++j) {
+        nChannel++;
+    }
+
+    if (nChannel <= 0) {
+        return py::array_t<double>();
+    }
+
+    py::array_t<float> r(std::vector<size_t>({static_cast<size_t>(height), static_cast<size_t>(width), static_cast<size_t>(nChannel)}),
+                         std::vector<size_t>({sizeof(float) * static_cast<size_t>(width), sizeof(float) * 1, sizeof(float) * static_cast<size_t>(height*width)}));
+
+    Imf::FrameBuffer frameBuffer;
+
+    int n_chan = 0;
+    for (Imf::ChannelList::ConstIterator j = layerBegin; j != layerEnd; ++j, n_chan++) {
+
+        frameBuffer.insert (j.name(),                                  // name
+                            Imf::Slice (Imf::FLOAT,                         // type
+                                        static_cast<char*>(static_cast<void*>(r.mutable_data(0, 0, n_chan))),
+                                        sizeof (float) * 1,    // xStride
+                                        sizeof (float) * static_cast<unsigned long>(width),// yStride
+                                        1, 1,                          // x/y sampling
+                                        FLT_MAX));
+
+    }
+
+    exr_file.setFrameBuffer (frameBuffer);
+    exr_file.readPixels (dw.min.y, dw.max.y);
+
+    return r;
+
+}
+
+
 PYBIND11_PLUGIN(LIB_NAME) {
 	py::module m(xstr(LIB_NAME), "pybind11 read exr channels module");
 
-	m.def("readExrChannel", &readExrChannel, "Read a channel from a file");
+    m.def("readExrChannel", &readExrChannel, "Read a channel from a file");
+    m.def("readExrLayer", &readExrLayer, "Read a complete layer from a file");
 
 	return m.ptr();
 }
