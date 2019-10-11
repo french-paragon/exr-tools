@@ -7,3 +7,5 @@ include_directories(${OpenEXR_INCLUDE_DIRS})
 
 target_link_libraries(${PROG_NAME} ${UTILS_LIB-NAME})
 target_link_libraries(${PROG_NAME} ${OpenEXR_LIBRARIES})
+
+install(TARGETS ${PROG_NAME} DESTINATION bin)
