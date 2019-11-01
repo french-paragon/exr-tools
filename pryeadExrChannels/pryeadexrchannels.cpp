@@ -18,12 +18,14 @@
 
 #include "pybind11/pybind11.h"
 #include "pybind11/numpy.h"
+#include "pybind11/stl.h"
 
 #include <string>
 #include <iterator>
 
 #include <OpenEXR/ImfArray.h>
 #include <OpenEXR/ImfInputFile.h>
+#include <OpenEXR/ImfOutputFile.h>
 #include <OpenEXR/ImfIO.h>
 #include <OpenEXR/ImfFrameBuffer.h>
 #include <OpenEXR/ImathBox.h>
@@ -134,11 +136,47 @@ py::array_t<float> readExrLayer(std::string file, std::string layer) {
 }
 
 
+void writeExrFile(std::string out_file, std::map<std::string, py::array_t<float> > channels) {
+
+	size_t height = channels.begin()->second.shape(0);
+	size_t width = channels.begin()->second.shape(1);
+
+	Imf::Header header (static_cast<int>(width), static_cast<int>(height));
+	Imf::FrameBuffer frameBuffer;
+
+	for (auto keyVal : channels) {
+
+		if (keyVal.second.ndim() != 2) {
+			throw std::invalid_argument("The dict containing the channels should only contain 2-dimensional images.");
+		}
+
+		if (keyVal.second.shape(0) != height || keyVal.second.shape(1) != width) {
+			throw std::invalid_argument("All channels must have the same size !");
+		}
+
+		header.channels().insert (keyVal.first, Imf::Channel (Imf::FLOAT));
+
+		frameBuffer.insert (keyVal.first, Imf::Slice(Imf::FLOAT,
+													 static_cast<char*>(const_cast<void*>(static_cast<const void*>(keyVal.second.data()))) ,
+													 keyVal.second.strides(1),
+													 keyVal.second.strides(0)));
+
+
+	}
+
+	Imf::OutputFile oFile(out_file.c_str(), header);
+
+	oFile.setFrameBuffer (frameBuffer);
+	oFile.writePixels (static_cast<int>(height));
+
+}
+
 PYBIND11_PLUGIN(LIB_NAME) {
 	py::module m(xstr(LIB_NAME), "pybind11 read exr channels module");
 
-    m.def("readExrChannel", &readExrChannel, "Read a channel from a file");
-    m.def("readExrLayer", &readExrLayer, "Read a complete layer from a file");
+	m.def("readExrChannel", &readExrChannel, "Read a channel from a file");
+	m.def("readExrLayer", &readExrLayer, "Read a complete layer from a file");
+	m.def("writeExrFile", &writeExrFile, "write an exr file from a dict of channels");
 
 	return m.ptr();
 }
