@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <set>
+#include <vector>
 
 #include <OpenEXR/ImfInputFile.h>
 #include <OpenEXR/ImfTiledInputFile.h>
@@ -25,6 +26,8 @@
 #include <OpenEXR/ImfFrameBuffer.h>
 #include <OpenEXR/ImathBox.h>
 #include <OpenEXR/ImfChannelList.h>
+#include <OpenEXR/ImfAttribute.h>
+#include <OpenEXR/ImfStandardAttributes.h>
 
 #include "isexr.h"
 #include "getversionfield.h"
@@ -32,10 +35,41 @@
 using namespace Imf;
 using namespace std;
 
-void treatFileScanLines(const char* fileName) {
+void treatFileScanLines(const char* fileName, bool list_attributes) {
 
 	cout << "File: " << fileName << endl;
 	InputFile file (fileName);
+
+	if (list_attributes) {
+		cout << endl << "Image attributes :" << endl;
+
+		for(auto it = file.header().begin(); it != file.header().end(); ++it) {
+			cout << endl << it.name() << "(" << it.attribute().typeName() << ")";
+
+			if (std::string(it.attribute().typeName()) == "string") {
+				StringAttribute att = StringAttribute::cast(it.attribute());
+				cout << ": " << endl << att.value();
+			}
+
+			if (std::string(it.attribute().typeName()) == "stringvector") {
+				StringVectorAttribute att = StringVectorAttribute::cast(it.attribute());
+				cout << ": ";
+				for (string line : att.value()) {
+					cout << endl << line;
+				}
+				cout << endl;
+			}
+
+			if (std::string(it.attribute().typeName()) == "float") {
+				FloatAttribute att = FloatAttribute::cast(it.attribute());
+				cout << ": " << endl << att.value();
+			}
+
+			cout << endl;
+		}
+
+		cout << endl;
+	}
 
 	const ChannelList &channels = file.header().channels();
 
@@ -67,7 +101,18 @@ void treatFileScanLines(const char* fileName) {
 int main (int argc, char** argv) {
 
 	if (argc > 1) {
-		for (int i = 1; i < argc; i++) {
+
+		bool display_attr = false;
+		int argv_offset = 1;
+
+		if (argc > 2) {
+			if (std::string(argv[1]) == "-d") {
+				argv_offset = 2;
+				display_attr = true;
+			}
+		}
+
+		for (int i = argv_offset; i < argc; i++) {
 			if (isExrFile(argv[i])) {
 				uint32_t v_number = getVersionField(argv[i]);
 
@@ -75,9 +120,9 @@ int main (int argc, char** argv) {
 					cerr << "File: " << argv[i] << " is multipart, skipping it for the moment" << endl;
 				} else if (v_number & IS_SINGLE_PART_TILED) {
 					cerr << "File: " << argv[i] << " is tiled" << endl;
-					treatFileScanLines(argv[i]);
+					treatFileScanLines(argv[i], display_attr);
 				} else {
-					treatFileScanLines(argv[i]);
+					treatFileScanLines(argv[i], display_attr);
 				}
 			}
 		}
