@@ -1,3 +1,5 @@
+if (DTM2EXR-UTILS)
+
 set(PROG_NAME ${EXRTOOLS_PROG_PREFIX}-dtm_invertconvert)
 
 add_executable(${PROG_NAME} main.cpp)
@@ -62,3 +64,5 @@ if (ZLIB_FOUND)
 endif(ZLIB_FOUND)
 
 set_target_properties(${PROG_NAME} PROPERTIES COMPILE_FLAGS ${CIMG_CFLAGS})
+
+endif(DTM2EXR-UTILS)

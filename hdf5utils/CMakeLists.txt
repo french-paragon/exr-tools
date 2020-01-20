@@ -1,3 +1,5 @@
+if (HDF2EXR-UTILS)
+
 set(EXR2HDF5_NAME ${EXRTOOLS_PROG_PREFIX}-exr2hdf5)
 set(HDF52EXR_NAME ${EXRTOOLS_PROG_PREFIX}-hdf52exr)
 
@@ -20,3 +22,5 @@ if(HDF5_FOUND)
     target_link_libraries(${HDF52EXR_NAME} ${OpenEXR_LIBRARIES})
 
 endif(HDF5_FOUND)
+
+endif (HDF2EXR-UTILS)

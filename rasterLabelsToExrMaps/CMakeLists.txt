@@ -1,3 +1,5 @@
+if (RASTERMAP2EXR)
+
 set(PROG_NAME ${EXRTOOLS_PROG_PREFIX}-map_create)
 
 add_executable(${PROG_NAME} main.cpp)
@@ -61,3 +63,5 @@ if (ZLIB_FOUND)
 endif(ZLIB_FOUND)
 
 set_target_properties(${PROG_NAME} PROPERTIES COMPILE_FLAGS ${CIMG_CFLAGS})
+
+endif (RASTERMAP2EXR)

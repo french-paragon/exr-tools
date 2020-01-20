@@ -1,3 +1,5 @@
+if (HYPERSPECTR2EXR-UTILS)
+
 set(BIL2EXR_NAME ${EXRTOOLS_PROG_PREFIX}-bil2exr)
 
 find_package(GDAL QUIET)
@@ -15,3 +17,5 @@ if(GDAL_FOUND)
     target_link_libraries(${BIL2EXR_NAME} ${OpenEXR_LIBRARIES})
 
 endif(GDAL_FOUND)
+
+endif (HYPERSPECTR2EXR-UTILS)

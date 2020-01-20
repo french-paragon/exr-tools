@@ -1,10 +1,20 @@
-set(LIB_NAME ${EXRTOOLS_LIB_PREFIX}_pryeadExrChannels)
+if (EXRTOOLS-PYTHON)
+
+set(LIB_NAME ${EXRTOOLS_LIB_PREFIX}_pyreadExrChannels)
+
+if (USE-PYTHON-2)
+
+find_package(Python 2. COMPONENTS Interpreter Development)
+
+else (USE-PYTHON-2)
 
 find_package(Python COMPONENTS Interpreter Development)
 
+endif (USE-PYTHON-2)
+
 add_definitions(-DLIB_NAME=${LIB_NAME})
 
-add_library(${LIB_NAME} SHARED pryeadexrchannels.cpp)
+add_library(${LIB_NAME} SHARED pyreadexrchannels.cpp)
 SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES PREFIX "")
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../utils)
@@ -17,3 +27,5 @@ target_link_libraries(${LIB_NAME} ${OpenEXR_LIBRARIES})
 target_link_libraries(${LIB_NAME} ${Python_LIBRARIES})
 
 install(TARGETS ${LIB_NAME} DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR})
+
+endif (EXRTOOLS-PYTHON)

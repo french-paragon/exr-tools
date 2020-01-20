@@ -1,3 +1,5 @@
+if (EXR-LISTUTIL)
+
 set(PROG_NAME ${EXRTOOLS_PROG_PREFIX}-list)
 
 add_executable(${PROG_NAME} main.cpp)
@@ -9,3 +11,5 @@ target_link_libraries(${PROG_NAME} ${UTILS_LIB-NAME})
 target_link_libraries(${PROG_NAME} ${OpenEXR_LIBRARIES})
 
 install(TARGETS ${PROG_NAME} DESTINATION bin)
+
+endif (EXR-LISTUTIL)
