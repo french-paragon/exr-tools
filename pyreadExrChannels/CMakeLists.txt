@@ -20,7 +20,7 @@ SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES PREFIX "")
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../utils)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../submodules/pybind11/include)
 include_directories(${OpenEXR_INCLUDE_DIRS})
-include_directories(${Python_INCLUDE_DIR})
+include_directories(${Python_INCLUDE_DIRS})
 
 target_link_libraries(${LIB_NAME} ${UTILS_LIB-NAME})
 target_link_libraries(${LIB_NAME} ${OpenEXR_LIBRARIES})
